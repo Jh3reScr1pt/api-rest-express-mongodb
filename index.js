@@ -1,35 +1,37 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Product = require("./models/product.model.js");
-const productRoute = require("./routes/product.route.js");
+const dotenv = require("dotenv");
+
+// Cargar variables de entorno
+dotenv.config();
+
+const userRoute = require("./routes/user.route.js");
 const app = express();
 
-// middleware
+// Middleware
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 
-
-// routes
-app.use("/api/products", productRoute);
-
-
-
+// Rutas
+app.use("/api/users", userRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello from Node API Server Updated");
 });
 
-
+// Conexión a la base de datos
 mongoose
-  .connect(
-    "mongodb+srv://haris2iftikhar:GClTzr15XhkjvN6k@backenddb.nrurtot.mongodb.net/Node-API?retryWrites=true&w=majority"
-  )
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
   .then(() => {
     console.log("Connected to database!");
-    app.listen(3000, () => {
-      console.log("Server is running on port 3000");
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
     });
   })
-  .catch(() => {
-    console.log("Connection failed!");
+  .catch((error) => {
+    console.log("Connection failed!", error);
   });
